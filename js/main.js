@@ -5,15 +5,13 @@
    contact form (EmailJS)
    ============================================ */
 
+/* ------- Prevent browser scroll-restore jump ------- */
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+window.scrollTo(0, 0);
+
 document.addEventListener("DOMContentLoaded", () => {
   /* ------- Initialize Lucide Icons ------- */
   lucide.createIcons();
-
-  /* ------- PAGE LOADER ------- */
-  const loader = document.getElementById("page-loader");
-  window.addEventListener("load", () => {
-    setTimeout(() => loader.classList.add("hidden"), 400);
-  });
 
   /* ------- THEME TOGGLE ------- */
   const themeToggle = document.getElementById("theme-toggle");
@@ -109,6 +107,21 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ------- SCROLL REVEAL ------- */
   const revealElements = document.querySelectorAll(".reveal");
 
+  // Instantly show elements already in viewport (no animation on load)
+  revealElements.forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      el.style.transition = "none";
+      el.classList.add("visible");
+    }
+  });
+  // Re-enable transitions after a frame
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      revealElements.forEach((el) => el.style.transition = "");
+    });
+  });
+
   const observerReveal = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -120,7 +133,9 @@ document.addEventListener("DOMContentLoaded", () => {
     { threshold: 0.12 }
   );
 
-  revealElements.forEach((el) => observerReveal.observe(el));
+  revealElements.forEach((el) => {
+    if (!el.classList.contains("visible")) observerReveal.observe(el);
+  });
 
   /* ------- TYPED TAGLINE ------- */
   const taglines = [
