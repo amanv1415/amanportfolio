@@ -243,22 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(step);
   }
 
-  /* ------- PARTICLES ------- */
-  const particlesContainer = document.getElementById("particles");
-  const particleCount = 30;
-
-  for (let i = 0; i < particleCount; i++) {
-    const p = document.createElement("div");
-    p.classList.add("particle");
-    p.style.left = Math.random() * 100 + "%";
-    p.style.top = Math.random() * 100 + "%";
-    p.style.width = Math.random() * 4 + 3 + "px";
-    p.style.height = p.style.width;
-    p.style.animationDuration = Math.random() * 8 + 6 + "s";
-    p.style.animationDelay = Math.random() * 5 + "s";
-    particlesContainer.appendChild(p);
-  }
-
   /* ------- BACK TO TOP ------- */
   const backToTop = document.getElementById("back-to-top");
   window.addEventListener("scroll", () => {
