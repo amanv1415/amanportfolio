@@ -141,11 +141,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const taglines = [
     "Full-Stack Developer",
     "UI/UX Enthusiast",
-    "Open Source Contributor",
+    "AI Enthusiast",
     "Problem Solver",
   ];
   const typedEl = document.getElementById("typed-tagline");
-  let taglineIndex = 0;
+  let taglineIndex = 1;
   let charIndex = 0;
   let isDeleting = false;
 

@@ -404,6 +404,8 @@ ul {
 .hero-tagline {
   font-size: 1.25rem;
   color: var(--accent);
+  height: 32px;          /* Fixed height */
+  line-height: 32px;
   font-weight: 500;
   min-height: 1.8rem;
   margin-bottom: 0.75rem;
