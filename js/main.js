@@ -243,6 +243,292 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(step);
   }
 
+  /* ------- LEETCODE MODAL ------- */
+  const leetButton = document.getElementById("leetcode-view-button");
+  const leetModal = document.getElementById("leetcode-modal");
+  const leetBackdrop = document.getElementById("leetcode-modal-backdrop");
+  const leetClose = document.getElementById("leetcode-modal-close");
+  const leetStatus = document.getElementById("leetcode-modal-status");
+  const leetContent = document.getElementById("leetcode-modal-content");
+
+  if (leetButton && leetModal && leetBackdrop && leetClose && leetStatus && leetContent) {
+    let lastFocusedElement = null;
+    let activeRequestId = 0;
+
+    leetButton.addEventListener("click", openLeetModal);
+    leetClose.addEventListener("click", closeLeetModal);
+
+    leetBackdrop.addEventListener("click", (event) => {
+      if (event.target === leetBackdrop) {
+        closeLeetModal();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && isLeetModalOpen()) {
+        closeLeetModal();
+      }
+    });
+
+    function isLeetModalOpen() {
+      return !leetModal.classList.contains("hidden");
+    }
+
+    function openLeetModal() {
+      lastFocusedElement = document.activeElement;
+
+      leetModal.classList.remove("hidden");
+      leetModal.setAttribute("aria-hidden", "false");
+      leetButton.setAttribute("aria-expanded", "true");
+      document.body.classList.add("modal-open");
+
+      leetClose.focus();
+      loadLeetCodeStats();
+    }
+
+    function closeLeetModal() {
+      if (!isLeetModalOpen()) {
+        return;
+      }
+
+      leetModal.classList.add("hidden");
+      leetModal.setAttribute("aria-hidden", "true");
+      leetButton.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("modal-open");
+
+      if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+        lastFocusedElement.focus();
+      } else {
+        leetButton.focus();
+      }
+    }
+
+    async function loadLeetCodeStats() {
+      const requestId = ++activeRequestId;
+
+      leetStatus.textContent = "Loading latest LeetCode statistics...";
+      leetContent.innerHTML = "";
+
+      try {
+        let response;
+        let data;
+        let endpointError;
+
+        try {
+          response = await fetch("/api/leetcode", {
+            cache: "no-store",
+          });
+          data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "Could not load data.");
+          }
+        } catch (error) {
+          endpointError = error;
+
+          const isLocalHost =
+            window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
+          if (!isLocalHost) {
+            throw endpointError;
+          }
+
+          response = await fetch("http://localhost:3000/api/leetcode", {
+            cache: "no-store",
+          });
+          data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "Could not load data.");
+          }
+        }
+
+        if (requestId !== activeRequestId) {
+          return;
+        }
+
+        leetStatus.textContent = "";
+        leetContent.innerHTML = renderLeetStats(data);
+      } catch (error) {
+        if (requestId !== activeRequestId) {
+          return;
+        }
+
+        leetStatus.textContent =
+          "Could not load LeetCode statistics right now. Please try again in a moment.";
+        leetContent.innerHTML = `
+          <section class="leetcode-detail-section" aria-live="polite">
+            <h3>Unable to load data</h3>
+            <p>Please run a local server with the /api/leetcode endpoint, then open this page from that server.</p>
+          </section>
+        `;
+      }
+    }
+
+    function renderLeetStats(data) {
+      return `
+        <div class="leetcode-heading">
+          <div>
+            <p class="leetcode-modal-label">Problem solving</p>
+            <h2>${number(data.solved?.all)} total solved</h2>
+          </div>
+        </div>
+
+        <div class="leetcode-stats-grid">
+          ${leetStat("Easy", `${number(data.solved?.easy)} / ${number(data.totals?.easy)}`)}
+          ${leetStat("Medium", `${number(data.solved?.medium)} / ${number(data.totals?.medium)}`)}
+          ${leetStat("Hard", `${number(data.solved?.hard)} / ${number(data.totals?.hard)}`)}
+          ${leetStat("Total submissions", number(data.totalSubmissions))}
+          ${leetStat("Current streak", `${number(data.currentStreak)} days`)}
+          ${leetStat("Maximum streak", `${number(data.maxStreak)} days`)}
+          ${leetStat("Profile rank", `#${number(data.profileRank)}`)}
+        </div>
+
+        ${renderContest(data.contest)}
+        ${renderBadges(data.badges || [])}
+        ${renderRecentSolved(data.recentSolved || [])}
+      `;
+    }
+
+    function renderContest(contest) {
+      if (!contest || typeof contest !== "object") {
+        return "";
+      }
+
+      const rows = [];
+
+      if (isFiniteNumber(contest.rating)) {
+        rows.push(leetStat("Contest rating", number(Math.round(contest.rating))));
+      }
+
+      if (isFiniteNumber(contest.rank)) {
+        rows.push(leetStat("Contest rank", `#${number(contest.rank)}`));
+      }
+
+      if (isFiniteNumber(contest.topPercentage)) {
+        rows.push(leetStat("Top percentage", `${Number(contest.topPercentage).toFixed(2)}%`));
+      }
+
+      if (!rows.length) {
+        return "";
+      }
+
+      return `
+        <section class="leetcode-detail-section">
+          <h3>Contest</h3>
+          <div class="leetcode-contest-grid">${rows.join("")}</div>
+        </section>
+      `;
+    }
+
+    function renderBadges(badges) {
+      if (!badges.length) {
+        return "";
+      }
+
+      return `
+        <section class="leetcode-detail-section">
+          <h3>Badges</h3>
+          <div class="leetcode-badges-grid">
+            ${badges
+              .map((badge) => {
+                const icon = escapeHtml(badge.icon || "");
+                const name = escapeHtml(badge.name || "Badge");
+
+                return `
+                  <article class="leetcode-badge">
+                    <img src="${icon}" alt="${name} icon" loading="lazy" />
+                    <span>${name}</span>
+                  </article>
+                `;
+              })
+              .join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderRecentSolved(recentSolved) {
+      const items = recentSolved.slice(0, 5);
+
+      if (!items.length) {
+        return `
+          <section class="leetcode-detail-section">
+            <h3>Recently solved</h3>
+            <p>No recently solved questions available.</p>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="leetcode-detail-section">
+          <h3>Recently solved</h3>
+          <ul class="leetcode-recent-list">
+            ${items
+              .map(
+                (problem) => `
+                  <li>
+                    <span class="leetcode-recent-title">${escapeHtml(problem.title || "Untitled problem")}</span>
+                    <time>${formatDate(problem.timestamp)}</time>
+                  </li>
+                `
+              )
+              .join("")}
+          </ul>
+        </section>
+      `;
+    }
+
+    function leetStat(label, value) {
+      return `
+        <article class="leetcode-stat">
+          <span class="leetcode-stat-label">${escapeHtml(label)}</span>
+          <strong class="leetcode-stat-value">${escapeHtml(String(value))}</strong>
+        </article>
+      `;
+    }
+
+    function number(value) {
+      const numeric = Number(value);
+
+      if (!Number.isFinite(numeric)) {
+        return "0";
+      }
+
+      return numeric.toLocaleString();
+    }
+
+    function isFiniteNumber(value) {
+      return Number.isFinite(Number(value));
+    }
+
+    function formatDate(timestamp) {
+      const seconds = Number(timestamp);
+
+      if (!Number.isFinite(seconds) || seconds <= 0) {
+        return "Unknown date";
+      }
+
+      return new Date(seconds * 1000).toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (character) => {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        }[character];
+      });
+    }
+  }
+
   /* ------- BACK TO TOP ------- */
   const backToTop = document.getElementById("back-to-top");
   window.addEventListener("scroll", () => {

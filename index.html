@@ -174,10 +174,21 @@
             <h3 class="stat-number" data-target="0">0</h3>
             <p>Years Experience</p>
           </div>
-          <div class="stat-card glass">
-            <h3 class="stat-number" data-target="150">0</h3>
-            <p>Leetcode Questions</p>
-          </div>
+<div class="stat-card glass">
+  <h3 class="stat-number" data-target="150">0</h3>
+  <p>Leetcode Questions</p>
+
+  <button
+    id="leetcode-view-button"
+    class="leetcode-view-button"
+    type="button"
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    aria-controls="leetcode-modal"
+  >
+    View Stats
+  </button>
+</div>
         </div>
       </div>
     </div>
@@ -1109,6 +1120,35 @@
       <p>Designed & built by <span class="footer-highlight">Aman Vishwakarma</span> &copy; 2026</p>
     </div>
   </footer>
+
+  <div id="leetcode-modal" class="leetcode-modal hidden" aria-hidden="true">
+    <div id="leetcode-modal-backdrop" class="leetcode-modal-backdrop" aria-hidden="true"></div>
+
+    <section
+      class="leetcode-modal-card glass"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="leetcode-modal-title"
+      aria-describedby="leetcode-modal-status"
+    >
+      <button
+        id="leetcode-modal-close"
+        class="leetcode-modal-close"
+        type="button"
+        aria-label="Close LeetCode stats"
+      >
+        &times;
+      </button>
+
+      <header class="leetcode-modal-header">
+        <p class="leetcode-modal-label">LeetCode user</p>
+        <h3 id="leetcode-modal-title">amanv1415</h3>
+      </header>
+
+      <p id="leetcode-modal-status" class="leetcode-modal-status" aria-live="polite"></p>
+      <div id="leetcode-modal-content"></div>
+    </section>
+  </div>
 
 
   <!-- ==================== BACK TO TOP ==================== -->
