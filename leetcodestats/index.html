@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aman | Portfolio</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>Aman Vishwakarma</h1>
+      <p class="intro">Developer Portfolio</p>
+
+      <section class="section">
+        <h2 class="section-title">LeetCode</h2>
+        <p class="muted">See solved stats, streaks, badges, and recent activity.</p>
+        <button
+          id="leetcode-open"
+          class="leetcode-open-btn"
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="leetcode-modal"
+        >
+          View LeetCode Stats
+        </button>
+      </section>
+
+      <div id="leetcode-modal" class="modal hidden" aria-hidden="true">
+        <div id="leetcode-backdrop" class="modal-backdrop" aria-hidden="true"></div>
+
+        <section
+          class="modal-card"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="leetcode-modal-title"
+          aria-describedby="leetcode-modal-status"
+        >
+          <button
+            id="leetcode-close"
+            class="modal-close"
+            type="button"
+            aria-label="Close LeetCode stats"
+          >
+            &times;
+          </button>
+
+          <header class="modal-header">
+            <p class="leetcode-label">LeetCode user</p>
+            <h3 id="leetcode-modal-title">amanv1415</h3>
+          </header>
+
+          <p id="leetcode-modal-status" class="muted modal-status" aria-live="polite"></p>
+          <div id="leetcode-modal-content"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
