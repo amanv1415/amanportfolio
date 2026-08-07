@@ -289,22 +289,14 @@ server.listen(PORT, () => {
 
 const visitorCounter = document.getElementById("visitor-count");
 
-if(visitorCounter){
-
-fetch("https://api.countapi.xyz/hit/amanv1415-portfolio/visits")
-
-.then(res=>res.json())
-
-.then(data=>{
-
-visitorCounter.innerHTML=data.value.toLocaleString()+" Visitors";
-
-})
-
-.catch(()=>{
-
-visitorCounter.innerHTML="0 Visitors";
-
-});
-
+if (visitorCounter) {
+    fetch("https://api.countapi.xyz/hit/amanv1415-portfolio/visits")
+        .then(res => res.json())
+        .then(data => {
+            visitorCounter.textContent = `${data.value.toLocaleString()} Visitors`;
+        })
+        .catch(error => {
+            console.error(error);
+            visitorCounter.textContent = "0 Visitors";
+        });
 }
