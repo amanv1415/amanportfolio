@@ -1801,3 +1801,36 @@ body.modal-open {
 
 /* ================= Visitor Counter ================= */
 
+.visitor-counter{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+
+    margin-top:.7rem;
+
+    color:var(--text-secondary);
+    font-size:.82rem;
+    font-weight:500;
+    line-height:1;
+
+    transition:color var(--transition);
+}
+
+.visitor-counter i{
+    font-size:.8rem;
+    color:var(--accent);
+}
+
+.visitor-counter span{
+    color:var(--text-secondary);
+    font-weight:500;
+}
+
+.visitor-counter:hover{
+    color:var(--accent);
+}
+
+.visitor-counter:hover span{
+    color:var(--accent);
+}

@@ -295,8 +295,7 @@ if (visitorCounter) {
         .then(data => {
             visitorCounter.textContent = `${data.value.toLocaleString()} Visitors`;
         })
-        .catch(error => {
-            console.error(error);
+        .catch(() => {
             visitorCounter.textContent = "0 Visitors";
         });
 }
