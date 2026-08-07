@@ -284,3 +284,27 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`Portfolio running at http://localhost:${PORT}`);
 });
+
+/* ================= Visitor Counter ================= */
+
+const visitorCounter = document.getElementById("visitor-count");
+
+if(visitorCounter){
+
+fetch("https://api.countapi.xyz/hit/amanv1415-portfolio/visits")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+visitorCounter.innerHTML=data.value.toLocaleString()+" Visitors";
+
+})
+
+.catch(()=>{
+
+visitorCounter.innerHTML="0 Visitors";
+
+});
+
+}
